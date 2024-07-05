@@ -1,51 +1,30 @@
-const http = require('http');
-const fs = require('fs');
+const express = require('express');
 const path = require('path');
+
+const app = express();
 
 const PORT = 3000;
 
-const server = http.createServer((req, res) => {
-  console.log('Server request');
+const createPath = (page) => path.resolve(__dirname, 'views', `${page}.html`);
 
-  res.setHeader('Content-Type', 'text/html');
-
-  const createPath = (page) => path.resolve(__dirname, 'views', `${page}.html`);
-  let basePath = '';
-
-  switch(req.url) {
-    case '/':
-    case '/home':
-    case '/index.html':
-      basePath = createPath('index');
-      res.statusCode = 200;
-      break;
-    case '/about-us':
-      res.statusCode = 301;
-      res.setHeader('Location', '/contacts');
-      res.end();
-      break;
-    case '/contacts':
-      basePath = createPath('contacts');
-      res.statusCode = 200;
-      break;
-    default:
-      basePath = createPath('error');
-      res.statusCode = 404;
-      break;
-  }
-
-  fs.readFile(basePath, (err, data) => {
-    if (err) {
-      console.log(err);
-      res.statusCode = 500;
-      res.end();
-    } else {
-      res.write(data);
-      res.end();
-    }
-  });
+app.listen(PORT, (error) => {
+  error ? console.log(error) : console.log(`listening port ${PORT}`);
 });
 
-server.listen(PORT, 'localhost', (error) => {
-  error ? console.log(error) : console.log(`listening port ${PORT}`);
+app.get('/', (req, res) => {
+  res.sendFile(createPath('index'));
+});
+
+app.get('/contacts', (req, res) => {
+  res.sendFile(createPath('contacts'));
+});
+
+app.get('/about-us', (req, res) => {
+  res.redirect('/contacts');
+});
+
+app.use((req, res) => {
+  res
+    .status(404)
+    .sendFile(createPath('error'));
 });

@@ -15,7 +15,7 @@ app.listen(PORT, (error) => {
 });
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
-
+app.use(express.urlencoded({extended: false}));
 app.use(express.static('styles'));
 
 app.get('/', (req, res) => {
@@ -33,12 +33,37 @@ app.get('/contacts', (req, res) => {
 
 app.get('/posts/:id', (req, res) => {
   const title = 'Post';
-  res.render(createPath('post'), { title });
+  const post = {
+    id: '1', 
+    text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente quidem provident, dolores, vero laboriosam nemo mollitia impedit unde fugit sint eveniet, minima odio ipsum sed recusandae aut iste aspernatur dolorem.',
+    title: 'Post title',
+    author: 'Roma',
+  };
+  res.render(createPath('post'), { title, post });
 });
 
 app.get('/posts', (req, res) => {
   const title = 'Posts';
-  res.render(createPath('posts'), { title });
+  const posts = [
+    {
+      id: '1', 
+      text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente quidem provident, dolores, vero laboriosam nemo mollitia impedit unde fugit sint eveniet, minima odio ipsum sed recusandae aut iste aspernatur dolorem.',
+      title: 'Post title',
+      author: 'Roma',
+    } 
+  ];
+  res.render(createPath('posts'), { title, posts });
+});
+
+app.post('/add-post', (req, res) => {
+  const { title, author, text } = req.body;
+  const post = {
+    id: new Date(),
+    title,
+    author,
+    text,
+  };
+  res.render(createPath('post'), { post, title });
 });
 
 app.get('/add-post', (req, res) => {

@@ -1,12 +1,20 @@
 const express = require('express');
 const path = require('path');
 const morgan = require('morgan');
+const mongoose = require('mongoose');
+const Post = require('./models/post')
 
 const app = express();
 
 app.set('view engine', 'ejs');
 
 const PORT = 3000;
+const db = 'mongodb+srv://RomaDB:Orr1998kv2foreva@romaclaster.omugrde.mongodb.net/';
+
+mongoose
+  .connect(db)
+  .then(res => console.log('Conected to DB'))
+  .catch(err => console.log(err));
 
 const createPath = (page) => path.resolve(__dirname, 'views', `${page}.ejs`);
 
@@ -26,7 +34,7 @@ app.get('/', (req, res) => {
 app.get('/contacts', (req, res) => {
   const title = 'Contacts';
   const contacts = [
-    { name: 'GitHub', link: 'https://github.com/RomanOstrous' },
+    { name: 'GitHub', link: 'https://github.com/RomanOstrous'},
   ];
   res.render(createPath('contacts'), { contacts, title });
 });
@@ -57,13 +65,15 @@ app.get('/posts', (req, res) => {
 
 app.post('/add-post', (req, res) => {
   const { title, author, text } = req.body;
-  const post = {
-    id: new Date(),
-    title,
-    author,
-    text,
-  };
+  const post = new Post({title, author, text });
   res.render(createPath('post'), { post, title });
+  post
+    .save()
+    .then(result => res.send(result))
+    .catch(er => {
+      console.log(er);
+      res.render(createPath('error'), {title: 'Error'})
+    });
 });
 
 app.get('/add-post', (req, res) => {

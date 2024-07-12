@@ -9,8 +9,7 @@ const app = express();
 app.set('view engine', 'ejs');
 
 const PORT = 3000;
-const db = 'mongodb+srv://RomaDB:Orr1998kv2foreva@romaclaster.omugrde.mongodb.net/?retryWrites=true&w=majority&appName=RomaClaster';
-
+const db = 'mongodb+srv://RomaDB:Orr1998kv2foreva@romaclaster.omugrde.mongodb.net/RomaDB?retryWrites=true&w=majority&appName=RomaClaster';
 
 mongoose
   .connect(db)
